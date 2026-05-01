@@ -1,0 +1,17 @@
+services:
+  warehouse:
+    image: postgres:16
+    container_name: mai_lab1_db
+    environment:
+      POSTGRES_DB: mai_warehouse
+      POSTGRES_USER: student
+      POSTGRES_PASSWORD: bigdata2026
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./data:/data
+      - ./sql:/docker-entrypoint-initdb.d
+      - warehouse_data:/var/lib/postgresql/data
+
+volumes:
+  warehouse_data:

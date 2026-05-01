@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: mai_postgres
+    environment:
+      POSTGRES_DB: mai_lab2_db
+      POSTGRES_USER: student
+      POSTGRES_PASSWORD: bigdata2026
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./data:/data
+      - ./sql:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U student -d mai_lab2_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: mai_clickhouse
+    environment:
+      CLICKHOUSE_USER: click
+      CLICKHOUSE_PASSWORD: click
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+    ports:
+      - "8124:8123"
+      - "9001:9000"
+    healthcheck:
+      test: ["CMD-SHELL", "clickhouse-client --query 'SELECT 1'"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  spark:
+    build: ./spark
+    container_name: mai_spark
+    volumes:
+      - ./spark:/opt/spark/apps
+    depends_on:
+      postgres:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+    entrypoint: ["/bin/bash", "/opt/spark/apps/start.sh"]
