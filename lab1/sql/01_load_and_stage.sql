@@ -1,10 +1,3 @@
--- =====================================================================
--- 01_load_and_stage.sql
--- Создание промежуточной (staging) таблицы и загрузка всех CSV-файлов.
--- Все колонки храним как text — приведение типов выполняется на этапе
--- построения хранилища (см. 02_build_warehouse.sql).
--- =====================================================================
-
 drop table if exists staging_raw cascade;
 
 create table staging_raw (
@@ -60,8 +53,6 @@ create table staging_raw (
     supplier_country      text
 );
 
--- Загрузка десяти CSV-файлов с серверной стороны через COPY.
--- Каталог /data/ примонтирован в docker-compose.yml.
 copy staging_raw from '/data/MOCK_DATA.csv'     with (format csv, header true, quote '"', escape '"');
 copy staging_raw from '/data/MOCK_DATA (1).csv' with (format csv, header true, quote '"', escape '"');
 copy staging_raw from '/data/MOCK_DATA (2).csv' with (format csv, header true, quote '"', escape '"');
@@ -73,7 +64,6 @@ copy staging_raw from '/data/MOCK_DATA (7).csv' with (format csv, header true, q
 copy staging_raw from '/data/MOCK_DATA (8).csv' with (format csv, header true, quote '"', escape '"');
 copy staging_raw from '/data/MOCK_DATA (9).csv' with (format csv, header true, quote '"', escape '"');
 
--- Вспомогательный индекс для последующих join'ов на этапе ETL.
 create index if not exists idx_staging_raw_email_customer on staging_raw(customer_email);
 create index if not exists idx_staging_raw_email_seller   on staging_raw(seller_email);
 create index if not exists idx_staging_raw_email_supplier on staging_raw(supplier_email);

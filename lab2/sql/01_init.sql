@@ -1,8 +1,3 @@
--- =====================================================================
--- Инициализация PostgreSQL: создание staging-таблицы и загрузка CSV.
--- Все 50 колонок храним как TEXT - типы будут приведены позже в Spark.
--- =====================================================================
-
 CREATE TABLE IF NOT EXISTS staging_data (
     id                    TEXT,
     customer_first_name   TEXT,
@@ -56,7 +51,6 @@ CREATE TABLE IF NOT EXISTS staging_data (
     supplier_country      TEXT
 );
 
--- Загружаем все 10 CSV-файлов в staging_data.
 COPY staging_data FROM '/data/MOCK_DATA.csv'     WITH (FORMAT csv, HEADER true, DELIMITER ',', QUOTE '"');
 COPY staging_data FROM '/data/MOCK_DATA (1).csv' WITH (FORMAT csv, HEADER true, DELIMITER ',', QUOTE '"');
 COPY staging_data FROM '/data/MOCK_DATA (2).csv' WITH (FORMAT csv, HEADER true, DELIMITER ',', QUOTE '"');
